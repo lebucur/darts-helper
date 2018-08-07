@@ -6,7 +6,8 @@
 
 #define MAX_PLAYERS 10
 
-typedef enum {
+typedef enum 
+{
 	Inactive, //not playing
 	Playing,
 	Gold,
@@ -18,7 +19,8 @@ typedef enum {
 } Status;
 
 //keep #rounds for each prize category
-typedef struct {
+typedef struct 
+{
     int gold;
     int silver;
     int bronze;
@@ -43,7 +45,8 @@ int starting_points = 501; //arg3
 int players_count; //total players known in file
 int active_players;
 
-int get_response() {
+int get_response() 
+{
     switch (getch())
     {
         case 'y':
@@ -64,19 +67,24 @@ int get_response() {
 
 void offer_scores()
 {
-	for (int i = 0; i < players_count; ++i) {
-		switch (players[i].status) {
+	for (int i = 0; i < players_count; ++i) 
+	{
+		switch (players[i].status) 
+		{
 			case Inactive:
-				if (players[i].score) {
+				if (players[i].score) 
+				{
 					players[i].score--;
 				}
 			break;
 			
 			case Quiter:
-				if (players[i].score > 5) {
+				if (players[i].score > 5) 
+				{
 					players[i].score -= 5;
 				}
-				else {
+				else 
+				{
 					players[i].score = 0;
 				}
 			break;
@@ -101,10 +109,12 @@ void offer_scores()
 			break;
 			
 			case Loser:
-				if (players[i].score > 100) {
+				if (players[i].score > 100) 
+				{
 					players[i].score -= 100;
 				}
-				else {
+				else 
+				{
 					players[i].score = 0;
 				}
 			break;
@@ -116,10 +126,13 @@ void order_players()
 {
 	int sorted = 0;
 	player_t player;
-	while (!sorted) {
+	while (!sorted) 
+	{
 		sorted = 1;
-		for (int i = 0; i < players_count - 1; ++i) {
-			if (players[i].score < players[i+1].score) {
+		for (int i = 0; i < players_count - 1; ++i) 
+		{
+			if (players[i].score < players[i+1].score) 
+			{
 				sorted = 0;
 				player = players[i];
 				players[i] = players[i+1];
@@ -133,22 +146,26 @@ int read_file(char * filename)
 {
 	FILE * fptr = fopen(filename, "r");
 	fscanf(fptr, "%d", &players_count);
-	if (players_count > MAX_PLAYERS) {
+	if (players_count > MAX_PLAYERS) 
+	{
 		fprintf(stderr, "You can have max %d players!\n", MAX_PLAYERS);
 		return 0;
 	}
     
 	int line = 0;
-	while (line < players_count) {
+	while (line < players_count) 
+	{
 		fscanf(fptr, "%s", players[line].name);
 		fscanf(fptr, "%d", &players[line].score);
 		printf("Will %s play? ", players[line].name);
-		if (get_response()) {
+		if (get_response()) 
+		{
             ++active_players;
             players[line].status = Playing;
             players[line].points = starting_points;
         }
-		else {
+		else 
+		{
 			players[line].status = Inactive;
 		}
 		++line;
@@ -161,7 +178,8 @@ int write_file(char * filename)
 {
 	FILE * fptr = fopen(filename, "w");
 	fprintf(fptr, "%d", players_count);
-	for (int i = 0; i < players_count; ++i) {
+	for (int i = 0; i < players_count; ++i) 
+	{
 		fprintf(fptr, "\n%s\t%d", players[i].name, players[i].score);
 	}
 	printf("\nScores have been recorded in %s.\n", filename);
@@ -170,23 +188,28 @@ int write_file(char * filename)
 
 void finish(int player)
 {
-    if (players[player].rounds <= rank.gold || !rank.gold) {
+    if (players[player].rounds <= rank.gold || !rank.gold) 
+	{
         rank.gold = players[player].rounds;
         players[player].status = Gold;
     }
-    else if (players[player].rounds <= rank.silver || !rank.silver) {
+    else if (players[player].rounds <= rank.silver || !rank.silver) 
+	{
         rank.silver = players[player].rounds;
         players[player].status = Silver;
     }
-    else if (players[player].rounds <= rank.bronze || !rank.bronze) {
+    else if (players[player].rounds <= rank.bronze || !rank.bronze) 
+	{
         rank.bronze = players[player].rounds;
         players[player].status = Bronze;
     }
-    else if (players[player].rounds <= rank.finish || !rank.finish) {
+    else if (players[player].rounds <= rank.finish || !rank.finish) 
+	{
         rank.finish = players[player].rounds;
         players[player].status = Finished;
     }
-    else {
+    else 
+	{
         players[player].status = Loser;
     }
     active_players--;
@@ -199,17 +222,22 @@ void process_player(int current_player)
 	int in_value;
 	int points = players[current_player].points;
     ++players[current_player].rounds; //increment now
+	
     //play #darts
-	for (int d = 0; d < darts; ++d) { 		
+	for (int d = 0; d < darts; ++d) 
+	{ 		
         //GET DART VALUE
         printf("\nDart %d value: ", d+1);
         char input_line[100]; //TODO ??
-		if (fgets(input_line, sizeof(input_line), stdin)) {
-			if (1 != sscanf(input_line, "%d", &in_value)) {
+		if (fgets(input_line, sizeof(input_line), stdin)) 
+		{
+			if (1 != sscanf(input_line, "%d", &in_value)) 
+			{
 				//TODO pressing just enter returns previous value, useful
                 in_value = 0;
 			}
 		}
+		
         //CHECK VALUE
 		if (in_value < 0 || in_value > starting_points) { 
             //we have a quitter
@@ -218,12 +246,15 @@ void process_player(int current_player)
             active_players--;
 			return;
 		}
-		if (in_value > points) {
+		
+		if (in_value > points) 
+		{
             //skip this round
 			puts("Sorry, this is too much!");
 			return;
 		}
-		else { 
+		else 
+		{ 
             //OK
             points -= in_value;
             if (players[current_player].dart < points) {
@@ -234,10 +265,12 @@ void process_player(int current_player)
 	}
     
     players[current_player].points = points;
-	if (!points) {
+	if (!points) 
+	{
 		finish(current_player);
 	}
-    else if (active_players == 1) {
+    else if (active_players == 1) 
+	{
         players[current_player].status = Loser;
         puts("Loser!");
         active_players--;
@@ -249,17 +282,22 @@ void print_table(int game_over)
 {
 	system("cls");
 	printf("Name\t Points\t Round\tStatus");
+	
 	if (game_over) {
 		puts("\tScore\tHighest");
 	}
 	else {
 		puts("");
 	}
-	for (int i = 0; i < players_count; ++i) {
-		if (players[i].status || game_over) {
+	
+	for (int i = 0; i < players_count; ++i) 
+	{
+		if (players[i].status || game_over) 
+		{
 			printf("%s\t %d\t %d\t", players[i].name, players[i].points, players[i].rounds);
 			//transform status to string
-            switch (players[i].status) {
+            switch (players[i].status) 
+			{
 				case Inactive:
 					printf("Skip");
 				break;
@@ -296,7 +334,9 @@ void print_table(int game_over)
 					printf("Unknown");
 				break;
 			}
-			if (game_over) {
+			
+			if (game_over) 
+			{
 				printf("\t%d\t%d", players[i].score, players[i].dart);
 			}
 			puts(""); //newline
@@ -308,7 +348,8 @@ int main(int argc, char * argv[])
 {
 	system("cls");
 	char filename[15] = "darts.in";
-    switch (argc) {
+    switch (argc) 
+	{
 		case 1:
 			fprintf(stderr, "Using default input file: darts.in\n\n");
 		break;
@@ -331,21 +372,27 @@ int main(int argc, char * argv[])
         break;
     }
 	
-	if (!read_file(filename)) {
+	if (!read_file(filename)) 
+	{
 		fprintf(stderr, "Something is wrong with the input file!\nQuitting now.\n");
 		return -1;
 	}
 	
 	//start game
-	while (active_players) {
-		for (int current_player = 0; current_player < players_count; ++current_player) {
-			if (players[current_player].status != Playing) {
+	while (active_players) 
+	{
+		for (int current_player = 0; current_player < players_count; ++current_player) 
+		{
+			if (players[current_player].status != Playing) 
+			{
                 continue; //skip inactive player
             }
             print_table(0); //don't show scores now
 			process_player(current_player);
+			
 			//take commands
-            switch (getch()) {
+            switch (getch()) 
+			{
                 case 'a':
                     //add new player
                 break;
@@ -362,9 +409,11 @@ int main(int argc, char * argv[])
 	print_table(1); //game over
     
     printf("\nRecord results to file? ");
-    if (get_response()) {
+    if (get_response()) 
+	{
         write_file(filename);
     }
 	puts("Thanks for playing!");
-    return 0;
+    
+	return 0;
 }
